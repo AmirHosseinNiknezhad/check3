@@ -1,5 +1,5 @@
 # Simple workflow for deploying static content to GitHub Pages
-name: Deploy Vite site to Pages
+name: Deploy static content to Pages
 
 on:
   # Runs on pushes targeting the default branch
@@ -19,7 +19,7 @@ permissions:
 # However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
 concurrency:
   group: "pages"
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   
@@ -32,20 +32,21 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Use Node.js
+      - name: Set up Node
         uses: actions/setup-node@v4
         with: 
-            node-version: 22.x
+            node-version: lts/*
+            cache: npm
+      - name: Install dependencies
+        run: npm ci
       - name: Build
-        run: |
-            npm install
-            npm run build
+        run: npm run build
       - name: Setup Pages
         uses: actions/configure-pages@v5
-      - name: Upload `dist/` folder
+      - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: './dist'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
